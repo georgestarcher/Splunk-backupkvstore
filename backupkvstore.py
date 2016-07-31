@@ -12,6 +12,7 @@ def loadConfig(filename):
     global splunk_server
     global splunk_server_port
     global splunk_server_verify
+    global backupFolder
 
     parser = SafeConfigParser()
     parser.read(filename)
@@ -19,6 +20,7 @@ def loadConfig(filename):
     splunk_server = parser.get('splunk', 'splunk_server')
     splunk_server_port = parser.get('splunk', 'splunk_server_port')
     splunk_server_verify = parser.getboolean('splunk', 'splunk_server_verify')
+    backupFolder = parser.get('splunk', 'backup_folder')
 
 def getKVStoreData(url):
 
@@ -38,12 +40,12 @@ def getKVStoreCollections():
 def outputCollectionDataToFile(name,data):
 
     outFile = "data_"+name+".bak" 
-    json.dump(data,open(outFile,"wt"))
+    json.dump(data,open(os.path.join(backupFolder,outFile),"wt"))
 
 def outputCollectionDefToFile(name,data):
 
     outFile = "def_"+name+".bak"
-    json.dump(data,open(outFile,"wt"))
+    json.dump(data,open(os.path.join(backupFolder,outFile),"wt"))
 
 if __name__ == "__main__":
 
