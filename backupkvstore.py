@@ -24,18 +24,29 @@ def loadConfig(filename):
 
 def getKVStoreData(url):
 
-    url = url.replace('config','data')
-    splunk_url = ''.join([url,'/?output_mode=json'])
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    r = requests.get(splunk_url,auth=(splunk_user,splunk_password),verify=splunk_server_verify,headers=headers)
-    return json.loads(r.text)
+   try:
+        url = url.replace('config','data')
+        splunk_url = ''.join([url,'/?output_mode=json'])
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        r = requests.get(splunk_url,auth=(splunk_user,splunk_password),verify=splunk_server_verify,headers=headers)
+        r.raise_for_status()
+        return json.loads(r.text)
+   except requests.exceptions.HTTPError as e:
+        print( "%s" % str(e))
+        sys.exit(1)
 
 def getKVStoreCollections():
 
-    splunk_url = ''.join(['https://',splunk_server,':',splunk_server_port,'/servicesNS/-/-//storage/collections/config/?output_mode=json'])
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    r = requests.get(splunk_url,auth=(splunk_user,splunk_password),verify=splunk_server_verify,headers=headers)
-    return json.loads(r.text) 
+    try:
+        splunk_url = ''.join(['https://',splunk_server,':',splunk_server_port,'/servicesNS/-/-//storage/collections/config/?output_mode=json'])
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        r = requests.get(splunk_url,auth=(splunk_user,splunk_password),verify=splunk_server_verify,headers=headers)
+        r.raise_for_status()
+        return json.loads(r.text) 
+    except requests.exceptions.HTTPError as e:
+        print( "%s" % str(e))
+        sys.exit(1)
+
 
 def outputCollectionDataToFile(name,data):
 
